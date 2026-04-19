@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>RPA ComprasGov</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 24px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f5f5f5; }
+        .badge { display: inline-block; padding: 4px 8px; background: #0353a4; color: #fff; border-radius: 4px; }
+    </style>
+</head>
+<body>
+<h1>Monitor de Chat - ComprasGov</h1>
+<p>Mensagens processadas: <span class="badge" th:text="${processedMessages}">0</span></p>
+
+<h2>Clientes monitorados</h2>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>CNPJ</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="client : ${clients}">
+        <td th:text="${client.id}">1</td>
+        <td th:text="${client.name}">Cliente</td>
+        <td th:text="${client.cnpj}">00.000.000/0000-00</td>
+    </tr>
+    </tbody>
+</table>
+
+<p>Endpoint de ingestão: <code>POST /monitor/messages</code></p>
+</body>
+</html>
