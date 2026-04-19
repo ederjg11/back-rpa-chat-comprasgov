@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.stream.IntStream;
+
 @Controller
 public class MonitorController {
 
@@ -46,10 +48,11 @@ public class MonitorController {
 
     @PostMapping("/monitor/chat-html")
     public ResponseEntity<Void> receiveChatHtml(@Valid @RequestBody IncomingChatMessage chatHtml) {
-        chatHtmlReaderService.extractMessages(chatHtml.content())
-                .forEach(content -> chatMonitorService.processMessage(
-                        chatHtml.sourceMessageId() + "-" + Integer.toHexString(content.hashCode()),
-                        content
+        var extractedMessages = chatHtmlReaderService.extractMessages(chatHtml.content());
+        IntStream.range(0, extractedMessages.size())
+                .forEach(i -> chatMonitorService.processMessage(
+                        chatHtml.sourceMessageId() + "-" + i,
+                        extractedMessages.get(i)
                 ));
         return ResponseEntity.accepted().build();
     }
