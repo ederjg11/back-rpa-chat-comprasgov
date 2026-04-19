@@ -17,10 +17,11 @@ public class ClientMatcherService {
 
     public Optional<MonitoredClient> match(String message) {
         String normalizedMessage = normalize(message);
+        String lowercaseMessage = message == null ? "" : message.toLowerCase();
 
         return monitoredClientRepository.findByActiveTrue().stream()
                 .filter(client -> normalizedMessage.contains(normalize(client.getCnpj()))
-                        || message.toLowerCase().contains(client.getName().toLowerCase()))
+                        || lowercaseMessage.contains(client.getName().toLowerCase()))
                 .findFirst();
     }
 
