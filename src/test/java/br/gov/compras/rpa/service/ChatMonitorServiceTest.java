@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,5 +63,18 @@ class ChatMonitorServiceTest {
 
         verify(clientMatcherService, never()).match(any());
         verify(chatMessageLogRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldSaveMessageEvenWhenNotificationFails() {
+        MonitoredClient client = new MonitoredClient("Cliente Sul", "11.111.111/0001-11");
+        when(chatMessageLogRepository.existsBySourceMessageId("msg-3")).thenReturn(false);
+        when(clientMatcherService.match("conteudo")).thenReturn(Optional.of(client));
+        doThrow(new RuntimeException("smtp offline")).when(emailNotificationService).notifyClientMention(client, "conteudo");
+
+        chatMonitorService.processMessage("msg-3", "conteudo");
+
+        verify(whatsAppNotificationService).notifyClientMention(client, "conteudo");
+        verify(chatMessageLogRepository).save(any());
     }
 }
