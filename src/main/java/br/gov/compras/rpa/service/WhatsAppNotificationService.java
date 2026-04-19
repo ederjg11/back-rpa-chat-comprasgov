@@ -31,15 +31,19 @@ public class WhatsAppNotificationService implements NotificationService {
             return;
         }
 
-        restClient.post()
-                .uri(webhookUrl)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Map.of(
-                        "clientName", client.getName(),
-                        "cnpj", client.getCnpj(),
-                        "message", message
-                ))
-                .retrieve()
-                .toBodilessEntity();
+        try {
+            restClient.post()
+                    .uri(webhookUrl)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of(
+                            "clientName", client.getName(),
+                            "cnpj", client.getCnpj(),
+                            "message", message
+                    ))
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (RuntimeException ex) {
+            LOGGER.error("Failed to send WhatsApp notification for client {}", client.getName(), ex);
+        }
     }
 }

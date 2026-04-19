@@ -25,6 +25,6 @@ public class ClientMatcherService {
     }
 
     private String normalize(String input) {
-        return input == null ? "" : input.replaceAll("\\D", "").toLowerCase();
+        return input == null ? "" : input.replaceAll("\\D", "");
     }
 }
