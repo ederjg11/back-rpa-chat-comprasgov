@@ -3,6 +3,7 @@ package br.gov.compras.rpa.controller;
 import br.gov.compras.rpa.dto.IncomingChatMessage;
 import br.gov.compras.rpa.repository.ChatMessageLogRepository;
 import br.gov.compras.rpa.repository.MonitoredClientRepository;
+import br.gov.compras.rpa.service.ChatHtmlReaderService;
 import br.gov.compras.rpa.service.ChatMonitorService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,16 @@ public class MonitorController {
     private final MonitoredClientRepository monitoredClientRepository;
     private final ChatMessageLogRepository chatMessageLogRepository;
     private final ChatMonitorService chatMonitorService;
+    private final ChatHtmlReaderService chatHtmlReaderService;
 
     public MonitorController(MonitoredClientRepository monitoredClientRepository,
                              ChatMessageLogRepository chatMessageLogRepository,
-                             ChatMonitorService chatMonitorService) {
+                             ChatMonitorService chatMonitorService,
+                             ChatHtmlReaderService chatHtmlReaderService) {
         this.monitoredClientRepository = monitoredClientRepository;
         this.chatMessageLogRepository = chatMessageLogRepository;
         this.chatMonitorService = chatMonitorService;
+        this.chatHtmlReaderService = chatHtmlReaderService;
     }
 
     @GetMapping("/")
@@ -37,6 +41,16 @@ public class MonitorController {
     @PostMapping("/monitor/messages")
     public ResponseEntity<Void> receiveMessage(@Valid @RequestBody IncomingChatMessage message) {
         chatMonitorService.processMessage(message.sourceMessageId(), message.content());
+        return ResponseEntity.accepted().build();
+    }
+
+    @PostMapping("/monitor/chat-html")
+    public ResponseEntity<Void> receiveChatHtml(@Valid @RequestBody IncomingChatMessage chatHtml) {
+        chatHtmlReaderService.extractMessages(chatHtml.content())
+                .forEach(content -> chatMonitorService.processMessage(
+                        chatHtml.sourceMessageId() + "-" + Integer.toHexString(content.hashCode()),
+                        content
+                ));
         return ResponseEntity.accepted().build();
     }
 }
