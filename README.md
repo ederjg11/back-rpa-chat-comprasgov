@@ -17,12 +17,21 @@ mvn spring-boot:run
 ## Endpoints
 - `GET /` Dashboard MVC
 - `POST /monitor/messages` Ingestão de mensagens do RPA
+- `POST /monitor/chat-html` Ingestão de HTML da tela de chat (extração automática de mensagens)
 
 Exemplo de payload:
 ```json
 {
   "sourceMessageId": "chat-123",
   "content": "Mensagem citando 12.345.678/0001-90"
+}
+```
+
+Exemplo de HTML bruto:
+```json
+{
+  "sourceMessageId": "chat-page-001",
+  "content": "<div id=\"chat\"><div>Pregoeiro: Mensagem para 12.345.678/0001-90</div></div>"
 }
 ```
 
