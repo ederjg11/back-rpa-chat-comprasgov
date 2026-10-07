@@ -1,1 +1,11 @@
+playwright-profile-comprasnet/
 target/
+# macOS
+.DS_Store
+**/.DS_Store
+
+# IntelliJ
+.idea/
+
+# Arquivo local
+storage.json
